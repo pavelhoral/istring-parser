@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="istring">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IString Parser</title>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+</head>
+<body ng-controller="MainController as main">
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">IString Parser</a>
+            <ul class="nav navbar-nav">
+                <li><a href="" onclick="$('#source-file').click()">Load</a></li>
+            </ul>
+        </div>
+        <form class="hidden">
+            <input id="source-file" type="file" onchange="this.files.length > 0 && $(this).scope().$evalAsync('main.loadFile(file)', { file: this.files[0] })" >
+        </form>
+    </nav>
+    <div class="container-fluid">
+        <ul>
+            <li>Name: {{main.name}}</li>
+            <li>Count: {{main.data.count}}</li>
+            <li>Data size: {{main.data.dataSize}}</li>
+            <li>Data count: {{main.data.dataCount}}</li>
+        </ul>
+        <ul>
+            <li ng-repeat="(id, offset) in main.data.directory">
+                {{::id | hex4}} / {{::offset | hex4}}:
+                <pre>{{::main.data.data[offset]}}</pre>
+            </li>
+        </ul>
+    </div>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="src/app.js"></script>
+</body>
+</html>
