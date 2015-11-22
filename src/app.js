@@ -9,39 +9,38 @@ angular.module('istring', []).
 
     factory('istringParse', function() {
         return function(sourceData, sizeIncluded) {
-            var sourceArray = new Uint32Array(sourceData, 0, Math.floor(sourceData.byteLength / 4)),
+            var sourceView = new DataView(sourceData),
                 resultData = {
-                    count: sourceArray[0],
-                    dataSize: sourceArray[1],
-                    directory: {},
-                    data: {},
-                    dataCount: 0
-                },
+                    count: sourceView.getUint32(0, true),
+                    size: sourceView.getUint32(4, true),
+                    strings: {},
+                    records: {}
+                };
+                sourceDict = new Uint32Array(sourceData, 8, 2 * resultData.count),
+                stringArray = new Uint8Array(sourceData, 8 + 8 * resultData.count),
                 textDecoder = new TextDecoder();
             // Parse dictionary and strings
             var directoryIndex = 0,
-                stringArray = null,
                 startOffset = null,
-                stringLength = null;
-            for (directoryIndex = 0; directoryIndex < resultData.count; directoryIndex++) {
+                stopOffset = null;
+            for (directoryIndex = 0; directoryIndex < sourceDict.length; directoryIndex += 2) {
                 // Read directory entry
-                startOffset = (resultData.count + 1) * 8 + sourceArray[3 + directoryIndex * 2];
-                resultData.directory[sourceArray[2 + directoryIndex * 2]] = startOffset;
+                startOffset = sourceDict[directoryIndex + 1] + (sizeIncluded ? 4 : 0);
+                resultData.strings[sourceDict[directoryIndex]] = startOffset;
                 // Check if already loaded
-                if (resultData.data[startOffset]) {
+                if (resultData.records[startOffset]) {
                     continue;
                 }
                 // Read the actual string
-                stringArray = new Uint8Array(sourceData, startOffset + (sizeIncluded ? 4 : 0));
-                for (stringLength = 0; stringLength < stringArray.length; stringLength++) {
-                    if (stringArray[stringLength] === 0) {
+                for (stopOffset = startOffset; stopOffset < stringArray.length; stopOffset++) {
+                    if (stringArray[stopOffset] === 0) {
                         break;
                     }
                 }
-                stringArray = new Uint8Array(sourceData, startOffset + (sizeIncluded ? 4 : 0), stringLength);
-                resultData.data[startOffset] = textDecoder.decode(stringArray);
+                resultData.records[startOffset] = textDecoder.decode(stringArray.subarray(startOffset, stopOffset));
             }
-            resultData.dataCount = Object.keys(resultData.data).length;
+            resultData.stringIds = Object.keys(resultData.strings)
+            resultData.recordIds = Object.keys(resultData.records);
             return resultData;
         };
     }).
@@ -52,7 +51,7 @@ angular.module('istring', []).
 
         this.data = null;
 
-        this.loadFile = function(file) {
+        this.loadStringFile = function(file) {
             var fileReader = new FileReader();
             fileReader.onload = angular.bind(this, function() {
                 this.name = file.name;
@@ -60,6 +59,10 @@ angular.module('istring', []).
                 $scope.$apply();
             });
             fileReader.readAsArrayBuffer(file);
+        };
+
+        this.loadModFile = function(file) {
+
         };
 
     });

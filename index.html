@@ -17,20 +17,18 @@
             </ul>
         </div>
         <form class="hidden">
-            <input id="source-file" type="file" onchange="this.files.length > 0 && $(this).scope().$evalAsync('main.loadFile(file)', { file: this.files[0] })" >
+            <input id="source-file" type="file" onchange="this.files.length > 0 && $(this).scope().$evalAsync('main.loadStringFile(file)', { file: this.files[0] })" >
         </form>
     </nav>
     <div class="container-fluid">
         <ul>
             <li>Name: {{main.name}}</li>
             <li>Count: {{main.data.count}}</li>
-            <li>Data size: {{main.data.dataSize}}</li>
-            <li>Data count: {{main.data.dataCount}}</li>
         </ul>
         <ul>
-            <li ng-repeat="(id, offset) in main.data.directory">
-                {{::id | hex4}} / {{::offset | hex4}}:
-                <pre>{{::main.data.data[offset]}}</pre>
+            <li ng-repeat="stringId in main.data.stringIds" ng-init="recordId=main.data.strings[stringId]">
+                {{::stringId | hex4}} / {{::recordId | hex4}}:
+                <pre>{{::main.data.records[recordId]}}</pre>
             </li>
         </ul>
     </div>
