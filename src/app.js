@@ -1,10 +1,14 @@
-angular.module('istring', []).
+angular.module('bethparser', []).
 
-    filter('hex4', function() {
+    factory('hex4', function() {
         return function(number) {
             var hex = (+number).toString(16).toUpperCase();
             return '000000'.substring(0, 6 - hex.length) + hex;
         };
+    }).
+
+    filter('hex4', function(hex4) {
+        return hex4;
     }).
 
     factory('istringParse', function() {
@@ -45,7 +49,13 @@ angular.module('istring', []).
         };
     }).
 
-    controller('MainController', function($scope, $q, istringParse) {
+    factory('modParse', function() {
+        return function(sourceData) {
+
+        };
+    }).
+
+    controller('MainController', function($scope, $q, istringParse, hex4) {
 
         this.name = null;
 
@@ -56,9 +66,19 @@ angular.module('istring', []).
             fileReader.onload = angular.bind(this, function() {
                 this.name = file.name;
                 this.data = istringParse(fileReader.result, file.name.indexOf('.STRINGS') < 0);
+                this.data.$type = 'STRINGS';
                 $scope.$apply();
             });
             fileReader.readAsArrayBuffer(file);
+        };
+
+        this.renderStrings = function() {
+            var content = '';
+            this.data.stringIds.forEach(angular.bind(this, function(stringId) {
+                var recordId = this.data.strings[stringId];
+                content += '[' + hex4(stringId) + ']' + '[' + hex4(recordId) + '] ' + this.data.records[recordId] + '\n';
+            }));
+            this.data.$content = content;
         };
 
         this.loadModFile = function(file) {
