@@ -35,6 +35,15 @@
         </div>
         <pre ng-if="main.data.$content" ng-bind="::main.data.$content"></pre>
     </div>
+    <div class="container-fluid" ng-if="main.data.$type == 'MOD'">
+        <div>
+            <strong>{{main.name}}</strong> <small>{{main.data.records.length}}</small>
+        </div>
+        <div ng-if="!main.data.$content">
+            <button class="btn btn-default" type="button" ng-click="main.renderMod()">Render</button>
+        </div>
+        <pre ng-if="main.data.$content" ng-bind="::main.data.$content"></pre>
+    </div>
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="bower_components/angular/angular.js"></script>

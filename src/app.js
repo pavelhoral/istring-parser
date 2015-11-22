@@ -50,12 +50,35 @@ angular.module('bethparser', []).
     }).
 
     factory('modParse', function() {
+        var readRecord = function(sourceData, offset) {
+            var	sourceView = new DataView(sourceData, offset),
+                type = String.fromCharCode(
+                        sourceView.getUint8(0), sourceView.getUint8(1),
+                        sourceView.getUint8(2), sourceView.getUint8(3)),
+                record = {
+                    type: type,
+                    size: sourceView.getUint32(4, true),
+                    flags: sourceView.getUint32(8, true),
+                    id: sourceView.getUint32(12, true),
+                    revision: sourceView.getUint32(16, true),
+                    version: sourceView.getUint16(20, true)
+                };
+            return record;
+        };
         return function(sourceData) {
-
+            var resultData = {
+                    records: []
+                },
+                readOffset = 0;
+            while (readOffset < sourceData.byteLength) {
+                resultData.records.push(readRecord(sourceData, readOffset));
+                readOffset += 24 + resultData.records[resultData.records.length - 1].size;
+            }
+            return resultData;
         };
     }).
 
-    controller('MainController', function($scope, $q, istringParse, hex4) {
+    controller('MainController', function($scope, $q, istringParse, hex4, modParse) {
 
         this.name = null;
 
@@ -82,7 +105,22 @@ angular.module('bethparser', []).
         };
 
         this.loadModFile = function(file) {
+            var fileReader = new FileReader();
+            fileReader.onload = angular.bind(this, function() {
+                this.name = file.name;
+                this.data = modParse(fileReader.result);
+                this.data.$type = 'MOD';
+                $scope.$apply();
+            });
+            fileReader.readAsArrayBuffer(file);
+        };
 
+        this.renderMod = function() {
+            var content = '';
+            this.data.records.forEach(angular.bind(this, function(record) {
+                content += '[' + record.type + '] ' + '[' + hex4(record.id) + ']\n';
+            }));
+            this.data.$content = content;
         };
 
     });
