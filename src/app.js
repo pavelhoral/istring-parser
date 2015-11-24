@@ -40,12 +40,14 @@ angular.module('bethparser', []).
         this.renderMod = function() {
             this.data.$content = '';
             var renderRecord = function(indent, record) {
-                var result = '[' + record.type + '] ' + '[' + hex4(record.id) + '] ' + record.size;
+                var result = '[' + record.type + ']';
                 if (record.type === 'GRUP') {
-                    result += ' [' + record.data.type + ']';
-                    record.data.records.forEach(function(subrecord) {
+                    result += ' [' + record.label + ']';
+                    record.records.forEach(function(subrecord) {
                         result += '\n' + renderRecord(indent + '    ', subrecord);
                     });
+                } else {
+                    result += ' [' + hex4(record.id) + ']';
                 }
                 return indent + result;
             };

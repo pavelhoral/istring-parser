@@ -1,49 +1,79 @@
 angular.module('bethparser').
 
     factory('modParse', function() {
-        var readRecord = function(sourceData, offset) {
-            var	sourceView = new DataView(sourceData, offset),
+        /**
+         * Read record type signature.
+         */
+        var readType = function(context, offset) {
+            offset = offset || context.offset;
+            return String.fromCharCode(
+                    context.view.getUint8(offset), context.view.getUint8(offset + 1),
+                    context.view.getUint8(offset + 2), context.view.getUint8(offset + 3))
+        };
+        /**
+         * Read record of the specified type.
+         */
+        var readRecord = function(context, type) {
+            var	view = new DataView(context.source, context.offset),
                 record = {
-                    type: String.fromCharCode(
-                            sourceView.getUint8(0), sourceView.getUint8(1),
-                            sourceView.getUint8(2), sourceView.getUint8(3)),
-                    size: sourceView.getUint32(4, true),
-                    flags: sourceView.getUint32(8, true),
-                    id: sourceView.getUint32(12, true),
-                    revision: sourceView.getUint32(16, true),
-                    version: sourceView.getUint16(20, true)
+                    type: type,
+                    size: view.getUint32(4, true),
+                    flags: view.getUint32(8, true),
+                    id: view.getUint32(12, true),
+                    revision: view.getUint32(16, true),
+                    version: view.getUint16(20, true)
                 };
-            if (record.type === 'GRUP') {
-                console.log(new TextDecoder().decode(new Uint8Array(sourceData, offset, 80)));
-                record.data = readGroup(sourceData, offset + 24);
-            }
             return record;
         };
-        var readGroup = function(sourceData, offset) {
-            var sourceView = new DataView(sourceData, offset),
-                groupData = {
-                    size: sourceView.getUint32(4, true),
-                    type: String.fromCharCode(
-                            sourceView.getUint8(0), sourceView.getUint8(1),
-                            sourceView.getUint8(2), sourceView.getUint8(3)),
+        /**
+         * Read record group.
+         */
+        var readGroup = function(context) {
+            var view = new DataView(context.source, context.offset),
+                group = {
+                    type: 'GRUP',
+                    size: view.getUint32(4, true),
+                    label: readType(context, context.offset + 8),
                     records: []
                 },
-                readOffset = 24;
-            while (readOffset < groupData.size) {
-                groupData.records.push(readRecord(sourceData, readOffset));
-                readOffset += 24 + groupData.records[groupData.records.length - 1].size;
-            };
-            return groupData;
-        };
-        return function(sourceData) {
-            var resultData = {
-                    records: []
-                },
-                readOffset = 0;
-            while (readOffset < sourceData.byteLength) {
-                resultData.records.push(readRecord(sourceData, readOffset));
-                readOffset += 24 + resultData.records[resultData.records.length - 1].size;
+                child = angular.extend({}, context);
+            child.offset += 24;
+            while (child.offset <  context.offset + group.size) {
+                group.records.push(readNext(child));
             }
+            return group;
+        };
+        /**
+         * Parse next file entry (be it record or group).
+         */
+        var readNext = function(context) {
+            var type = readType(context),
+                result = null;
+            if (type === 'GRUP') {
+                result = readGroup(context);
+                context.offset += result.size;
+            } else {
+                result = readRecord(context, type);
+                context.offset += 24 + result.size;
+            }
+            return result;
+        };
+        /**
+         * Main data parsing function.
+         */
+        return function(source) {
+            var context = {
+                    source: source,
+                    view: new DataView(source),
+                    offset: 0
+                },
+                records = [];
+            while (context.offset < context.source.byteLength) {
+                records.push(readNext(context));
+            };
+            return {
+                records: records
+            };
             return resultData;
         };
     });
