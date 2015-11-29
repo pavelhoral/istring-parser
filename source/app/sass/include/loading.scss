@@ -1,0 +1,23 @@
+.loading-screen {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    transition: opacity 0.25s linear;
+    background: inherit;
+
+    > * {
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+        text-align: center;
+        font-size: 30px;
+    }
+}
+.loading-screen.hidden {
+    display: none;
+    opacity: 0;
+}
+.loading-screen.hidden-add {
+    display: block;
+}

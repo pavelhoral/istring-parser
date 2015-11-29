@@ -1,0 +1,44 @@
+{
+  "name": "palko-bethparser",
+  "version": "1.0.0",
+  "description": "Parser for Creation Engine mod files.",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pavelhoral/palko-bethparser.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pavelhoral/palko-bethparser/issues"
+  },
+  "homepage": "https://github.com/pavelhoral/palko-bethparser#readme",
+  "jspm": {
+    "directories": {
+      "baseURL": "source",
+      "packages": "source/vendor"
+    },
+    "dependencies": {
+      "angular": "github:angular/bower-angular@^1.4.8",
+      "angular-material": "github:angular/bower-material@^0.11.4"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^1.1.4"
+    },
+    "overrides": {
+      "github:angular/bower-material@0.11.4": {
+        "shim": {}
+      }
+    }
+  },
+  "devDependencies": {
+    "browser-sync": "^2.10.0",
+    "gulp": "^3.9.0",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-jshint": "^2.0.0",
+    "gulp-sass": "^2.1.0",
+    "jshint": "^2.8.0",
+    "jshint-stylish": "^2.1.0"
+  }
+}

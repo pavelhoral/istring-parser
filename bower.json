@@ -1,9 +1,0 @@
-{
-  "name": "palko-bethparser",
-  "version": "0.0.1",
-  "private": true,
-  "dependencies": {
-    "bootstrap": "~3.3.5",
-    "angular": "~1.4.7"
-  }
-}
