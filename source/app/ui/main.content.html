@@ -1,1 +1,10 @@
-HELLO WORLD!
+<div flex layout="column" layout-align="center center" ng-if="!mainCtrl.mod">
+    <h1>Welcome to Beth Parser!</h1>
+    <div>Please load the mod file.</div>
+</div>
+<div ng-if="mainCtrl.mod">
+    <h2>{{mainCtrl.mod.name}}</h2>
+
+
+
+</div>

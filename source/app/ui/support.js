@@ -26,7 +26,7 @@ app.directive('loadFile', ($parse) => {
                 on('change', (event) => {
                     if (!event.target.files.length) {
                         return;
-                    } else if (scope.multiple) {
+                    } else if (typeof scope.multiple !== 'undefined') {
                         scope.handler({ files: event.target.files });
                     } else {
                         scope.handler({ file: event.target.files[0] });
