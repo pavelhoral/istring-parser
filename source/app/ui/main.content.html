@@ -5,8 +5,8 @@
 <div ng-if="mainCtrl.mod" flex>
     <div node-walker="mainCtrl.mod" layout="column" layout-fill>
         <ul class="node-path">
-            <li ng-repeat="pathPart in walkerCtrl.path" ng-init="node = pathPart.node">
-                <a href="" ng-click="walkerCtrl.enterNode(pathPart.node)" class="node-link">
+            <li ng-repeat="node in walkerCtrl.path">
+                <a href="" ng-click="walkerCtrl.enterNode(node)" class="node-link">
                     <span>{{node.$type}} {{(node.edid || node.label)}}</span>
                     <span ng-if="node.id">[{{node.id | hex4}}]</span>
                     <span ng-if="node.$children">({{node.$children.length}})</span>

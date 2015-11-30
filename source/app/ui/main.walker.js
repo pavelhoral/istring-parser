@@ -15,26 +15,39 @@ class WalkerController {
         var node = this.node,
             path = [];
         while (node !== null) {
-            path.unshift({
-                node: node
-            });
+            path.unshift(node);
             node = node.$parent;
         }
-        this.path = path;
+        return path;
+    }
+
+    cleanupPath(oldPath) {
+        var index = -1;
+        while (++index < oldPath.length) {
+            if (this.path.length < index || this.path[index] !== oldPath[index]) {
+                delete oldPath[index].$filter;
+                if (oldPath[index].$fields) {
+                    oldPath[index].$fields = [];
+                }
+            }
+        }
     }
 
     enterNode(node) {
-        if (this.node instanceof ModRecord && this.node !== node.$parent)  {
-            this.node.$fields = [];
+        var oldPath = this.path;
+        if (this.node === node) {
+            return;
         }
-        if (this.node instanceof ModField && node.$parent !== this.node.$parent) {
-            this.node.$parent.$fields = [];
-        }
-        // TODO clean $filters from node path
+        this.node = node;
+        this.path = this.renderPath();
+        // Lazy load record fields
         if (node instanceof ModRecord && !node.$fields.length) {
             new ModFileMapper().readFields(this.buffer, node);
         }
-        this.node = node;
+        // Cleanup path
+        if (oldPath) {
+            this.cleanupPath(oldPath);
+        }
     }
 
     createFilter(text) {
@@ -55,11 +68,9 @@ app.directive('nodeWalker', () => {
         scope: true,
         controller: 'WalkerController as walkerCtrl',
         link: (scope, element, attrs, walker) => {
-            var mod = scope.$eval(attrs.nodeWalker);
-            walker.buffer = mod.buffer;
-            walker.enterNode(mod.root);
-            scope.$watch('walkerCtrl.node', () => {
-                walker.renderPath();
+            scope.$watch(attrs.nodeWalker, (mod) => {
+                walker.buffer = mod.buffer;
+                walker.enterNode(mod.root);
             });
         }
     };
