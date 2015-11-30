@@ -15,10 +15,16 @@ class ModFileMapper {
 
     readFields(buffer, record) {
         var parser = new ModFileParser(buffer, record.offset);
-        parser.onfield = function(record, field) {
-            record.$fields.push(field);
-        };
-        return parser.parseFields(record, record.size);
+        if (record.flags & 0x00040000) {
+            record.$fields.push(new ModField('ZLIB', record))
+            record.$fields[0].offset = record.offset;
+            record.$fields[0].size = record.size;
+        } else {
+            parser.onfield = function(record, field) {
+                record.$fields.push(field);
+            };
+            parser.parseFields(record, record.size);
+        }
     }
 
 }
