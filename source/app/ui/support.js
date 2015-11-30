@@ -2,7 +2,11 @@ import { app, angular } from 'app/app';
 import { hex4 } from 'app/lib/support';
 
 // Register hex4 filter
-app.filter('hex4', () => hex4);
+app.filter('hex4', function() {
+    return function(value) {
+        return typeof value === 'number' ? hex4(value) : value;
+    };
+});
 
 /**
  * Load file directive.

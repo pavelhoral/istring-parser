@@ -27,3 +27,37 @@
   left: 0;
   right: 0;
   bottom: 0; }
+
+.node-link {
+  color: #3f51b5;
+  text-decoration: none;
+  font-family: monospace; }
+
+.node-link:hover {
+  color: #001276; }
+
+.node-path {
+  list-style-type: none;
+  margin: 0;
+  padding: 0; }
+  .node-path li {
+    display: inline-block;
+    padding: 5px 10px; }
+  .node-path li + li::before {
+    position: relative;
+    left: -7px;
+    content: ' / '; }
+
+.node-children .node-item {
+  padding: 5px 5px 5px 20px; }
+
+.node-children .node-item + .node-item {
+  border-top: 1px solid #eeeeee; }
+
+.field-buffer {
+  padding: 10px;
+  margin: 0;
+  background: #dddddd; }
+
+.field-buffer + .field-buffer {
+  background: #eeeeee; }

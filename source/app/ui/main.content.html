@@ -2,9 +2,63 @@
     <h1>Welcome to Beth Parser!</h1>
     <div>Please load the mod file.</div>
 </div>
-<div ng-if="mainCtrl.mod">
-    <h2>{{mainCtrl.mod.name}}</h2>
-
-
-
+<div ng-if="mainCtrl.mod" flex>
+    <div node-walker="mainCtrl.mod" layout="column" layout-fill>
+        <ul class="node-path">
+            <li ng-repeat="pathPart in walkerCtrl.path" ng-init="node = pathPart.node">
+                <a href="" ng-click="walkerCtrl.enterNode(pathPart.node)" class="node-link">
+                    <span>{{node.$type}} {{(node.edid || node.label)}}</span>
+                    <span ng-if="node.id">[{{node.id | hex4}}]</span>
+                    <span ng-if="node.$children">({{node.$children.length}})</span>
+                </a>
+            </li>
+        </ul>
+        <div layout="row" flex>
+            <md-content class="node-children md-whiteframe-1dp" ng-if="walkerCtrl.node.$parent.$children" layout="column" flex layout-fill>
+                <md-virtual-repeat-container flex>
+                    <div md-virtual-repeat="node in walkerCtrl.node.$parent.$children" class="node-item" flex>
+                        <a href="" ng-click="walkerCtrl.enterNode(node)" class="node-link">
+                            <span>{{node.$type}} {{(node.edid || node.label)}}</span>
+                            <span ng-if="node.id">[{{node.id | hex4}}]</span>
+                            <span ng-if="node.$children">({{node.$children.length}})</span>
+                        </a>
+                    </div>
+                </md-virtual-repeat-container>
+            </md-content>
+            <md-content class="node-children md-whiteframe-1dp" ng-if="walkerCtrl.node.$children" layout="column" flex layout-fill>
+                <md-virtual-repeat-container flex>
+                    <div md-virtual-repeat="node in walkerCtrl.node.$children" class="node-item" flex>
+                        <a href="" ng-click="walkerCtrl.enterNode(node)" class="node-link">
+                            <span>{{node.$type}} {{(node.edid || node.label)}}</span>
+                            <span ng-if="node.id">[{{node.id | hex4}}]</span>
+                            <span ng-if="node.$children">({{node.$children.length}})</span>
+                        </a>
+                    </div>
+                </md-virtual-repeat-container>
+            </md-content>
+            <md-content class="node-children md-whiteframe-1dp" ng-if="walkerCtrl.node.$parent.$fields" layout="column" flex layout-fill>
+                <md-virtual-repeat-container flex>
+                    <div md-virtual-repeat="node in walkerCtrl.node.$parent.$fields" class="node-item">
+                        <a href="" ng-click="walkerCtrl.enterNode(node)" class="node-link">
+                            {{node.$type}} [{{node.offset | hex4}}]
+                        </a>
+                    </div>
+                </md-virtual-repeat-container>
+            </md-content>
+            <md-content class="node-children md-whiteframe-1dp" ng-if="walkerCtrl.node.$fields" layout="column" flex layout-fill>
+                <md-virtual-repeat-container flex>
+                    <div md-virtual-repeat="node in walkerCtrl.node.$fields" class="node-item">
+                        <a href="" ng-click="walkerCtrl.enterNode(node)" class="node-link">
+                            {{node.$type}} [{{node.offset | hex4}}]
+                        </a>
+                    </div>
+                </md-virtual-repeat-container>
+            </md-content>
+            <md-content class="node-children md-whiteframe-1dp" ng-if="!walkerCtrl.node.$fields && !walkerCtrl.node.$children" layout="row"
+                    flex layout-fill md-scroll-y field-buffer="walkerCtrl.node" buffer-ref="walkerCtrl.buffer" >
+                <pre class="field-buffer" flex>{{hexa}}{{overflow ? '...' : ''}}</pre>
+                <pre class="field-buffer" flex>{{text}}{{overflow ? '...' : ''}}</pre>
+            </md-content>
+        </div>
+    </div>
 </div>

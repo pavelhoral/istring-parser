@@ -40,7 +40,8 @@ class MainController {
         this.loadFile(file, (name, buffer) => {
             this.mod = {
                 name: name,
-                data: new ModFileMapper().readMod(buffer)
+                buffer: buffer,
+                root: new ModFileMapper().readMod(buffer)
             };
         });
     }
