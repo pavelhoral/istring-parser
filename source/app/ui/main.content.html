@@ -15,8 +15,11 @@
         </ul>
         <div layout="row" flex>
             <md-content class="node-children md-whiteframe-1dp" ng-if="walkerCtrl.node.$parent.$children" layout="column" flex layout-fill>
+                <md-input-container class="node-filter">
+                    <input type="text" ng-model="walkerCtrl.node.$parent.$filter">
+                </md-input-container>
                 <md-virtual-repeat-container flex>
-                    <div md-virtual-repeat="node in walkerCtrl.node.$parent.$children" class="node-item" flex>
+                    <div md-virtual-repeat="node in walkerCtrl.node.$parent.$children | filter:walkerCtrl.createFilter(walkerCtrl.node.$parent.$filter)" class="node-item" flex>
                         <a href="" ng-click="walkerCtrl.enterNode(node)" class="node-link">
                             <span>{{node.$type}} {{(node.edid || node.label)}}</span>
                             <span ng-if="node.id">[{{node.id | hex4}}]</span>
@@ -26,8 +29,11 @@
                 </md-virtual-repeat-container>
             </md-content>
             <md-content class="node-children md-whiteframe-1dp" ng-if="walkerCtrl.node.$children" layout="column" flex layout-fill>
+                <md-input-container class="node-filter">
+                    <input type="text" ng-model="walkerCtrl.node.$filter">
+                </md-input-container>
                 <md-virtual-repeat-container flex>
-                    <div md-virtual-repeat="node in walkerCtrl.node.$children" class="node-item" flex>
+                    <div md-virtual-repeat="node in walkerCtrl.node.$children | filter:walkerCtrl.createFilter(walkerCtrl.node.$filter)" class="node-item" flex>
                         <a href="" ng-click="walkerCtrl.enterNode(node)" class="node-link">
                             <span>{{node.$type}} {{(node.edid || node.label)}}</span>
                             <span ng-if="node.id">[{{node.id | hex4}}]</span>
@@ -37,19 +43,25 @@
                 </md-virtual-repeat-container>
             </md-content>
             <md-content class="node-children md-whiteframe-1dp" ng-if="walkerCtrl.node.$parent.$fields" layout="column" flex layout-fill>
+                <md-input-container class="node-filter">
+                    <input type="text" ng-model="walkerCtrl.node.$parent.$filter">
+                </md-input-container>
                 <md-virtual-repeat-container flex>
-                    <div md-virtual-repeat="node in walkerCtrl.node.$parent.$fields" class="node-item">
+                    <div md-virtual-repeat="node in walkerCtrl.node.$parent.$fields | filter:walkerCtrl.createFilter(walkerCtrl.node.$parent.$filter)" class="node-item">
                         <a href="" ng-click="walkerCtrl.enterNode(node)" class="node-link">
-                            {{node.$type}} [{{node.offset | hex4}}]
+                            {{node.$type}} [{{node.offset | hex4}}] ({{node.size}})
                         </a>
                     </div>
                 </md-virtual-repeat-container>
             </md-content>
             <md-content class="node-children md-whiteframe-1dp" ng-if="walkerCtrl.node.$fields" layout="column" flex layout-fill>
+                <md-input-container class="node-filter">
+                    <input type="text" ng-model="walkerCtrl.node.$filter">
+                </md-input-container>
                 <md-virtual-repeat-container flex>
-                    <div md-virtual-repeat="node in walkerCtrl.node.$fields" class="node-item">
+                    <div md-virtual-repeat="node in walkerCtrl.node.$fields | filter:walkerCtrl.createFilter(walkerCtrl.node.$filter)" class="node-item">
                         <a href="" ng-click="walkerCtrl.enterNode(node)" class="node-link">
-                            {{node.$type}} [{{node.offset | hex4}}]
+                            {{node.$type}} [{{node.offset | hex4}}] ({{node.size}})
                         </a>
                     </div>
                 </md-virtual-repeat-container>

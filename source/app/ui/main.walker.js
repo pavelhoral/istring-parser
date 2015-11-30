@@ -30,10 +30,21 @@ class WalkerController {
         if (this.node instanceof ModField && node.$parent !== this.node.$parent) {
             this.node.$parent.$fields = [];
         }
+        // TODO clean $filters from node path
         if (node instanceof ModRecord && !node.$fields.length) {
             new ModFileMapper().readFields(this.buffer, node);
         }
         this.node = node;
+    }
+
+    createFilter(text) {
+        var regexp = text ? new RegExp(text.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"), 'i') : null;
+        return (node) => {
+            return !regexp || (node.$type).match(regexp) ||
+                    node.edid && ('' + node.edid).match(regexp) ||
+                    node.id && hex4(node.id).match(regexp) ||
+                    node.label && ('' + node.label).match(regexp);
+        };
     }
 
 }
@@ -59,7 +70,6 @@ app.directive('fieldBuffer', ($window) => {
     return {
         scope: true,
         link: (scope, element, attrs) => {
-            element.css('white-space', 'pre-wrap');
             scope.$watch(attrs.fieldBuffer, (node) => {
                 var buffer = scope.$eval(attrs.bufferRef),
                     array = new Uint8Array(buffer, node.offset, node.size),
