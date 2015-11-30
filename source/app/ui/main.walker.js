@@ -5,7 +5,8 @@ import { ModRecord, ModField, ModGroup } from 'app/lib/modfile.model';
 
 class WalkerController {
 
-    constructor() {
+    constructor($mdDialog) {
+        this.$mdDialog = $mdDialog;
         this.node = null;
         this.buffer = null;
         this.path = null;
@@ -31,6 +32,44 @@ class WalkerController {
                 }
             }
         }
+    }
+
+    searchRecord() {
+        this.$mdDialog.show({
+            template:
+                '<form ng-submit="hide(search.text)" ng-init="search = {}" layout="row" layout-align="center center">' +
+                    '<md-input-container md-no-float>' +
+                        '<label>Enter record ID:</label>' +
+                        '<input type="text" ng-model="search.text" maxlength="8">' +
+                    '</md-input-container>' +
+                    '<md-button type="submit">SEARCH</md-button>' +
+                '</form>',
+            clickOutsideToClose: true,
+            controller: ($scope) => {
+                $scope.hide = (value) => this.$mdDialog.hide(value);
+            }
+        }).then((text) => {
+            var id = parseInt(text, 16),
+                find = (node) => {
+                    var i, child;
+                    if (node.id && node.id == id) {
+                        return node;
+                    } else if (!node.$children) {
+                        return null;
+                    }
+                    for (i = 0; i < node.$children.length; i++) {
+                        child = find(node.$children[i]);
+                        if (child) {
+                            return child;
+                        }
+                    }
+                    return null;
+                },
+                node = find(this.path[0]);
+             if (node) {
+                 this.enterNode(node);
+             }
+        });
     }
 
     enterNode(node) {

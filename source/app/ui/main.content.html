@@ -4,15 +4,20 @@
 </div>
 <div ng-if="mainCtrl.mod" flex>
     <div node-walker="mainCtrl.mod" layout="column" layout-fill>
-        <ul class="node-path">
-            <li ng-repeat="node in walkerCtrl.path">
-                <a href="" ng-click="walkerCtrl.enterNode(node)" class="node-link">
-                    <span>{{node.$type}} {{(node.edid || node.label)}}</span>
-                    <span ng-if="node.id">[{{node.id | hex4}}]</span>
-                    <span ng-if="node.$children">({{node.$children.length}})</span>
-                </a>
-            </li>
-        </ul>
+        <div layout="row">
+            <ul class="node-path" flex>
+                <li ng-repeat="node in walkerCtrl.path">
+                    <a href="" ng-click="walkerCtrl.enterNode(node)" class="node-link">
+                        <span>{{node.$type}} {{(node.edid || node.label)}}</span>
+                        <span ng-if="node.id">[{{node.id | hex4}}]</span>
+                        <span ng-if="node.$children">({{node.$children.length}})</span>
+                    </a>
+                </li>
+            </ul>
+            <md-button class="md-icon-button node-search" ng-click="walkerCtrl.searchRecord()">
+                <md-icon md-svg-icon="assets/icons/search.svg"></md-icon>
+            </md-button>
+        </div>
         <div layout="row" flex>
             <md-content class="node-children md-whiteframe-1dp" ng-if="walkerCtrl.node.$parent.$children" layout="column" flex layout-fill>
                 <md-input-container class="node-filter">

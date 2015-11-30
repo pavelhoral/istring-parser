@@ -71,3 +71,9 @@
     padding: 0 10px; }
   .node-filter.md-input-focused input {
     border-bottom-width: 1px; }
+
+.md-button.node-search {
+  margin-top: -10px; }
+
+.node-search-input {
+  padding-bottom: 2px; }
